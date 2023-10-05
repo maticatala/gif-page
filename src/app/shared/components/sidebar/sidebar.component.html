@@ -1,11 +1,18 @@
-<div class="bg-dark border-right p-3 position-sticky top-0" id="sidebar">
+<div class="bg-dark border-right p-3" id="sidebar">
   <h3 class="text-light">GifsApp</h3>
   <hr class="text-white">
 
   <div class="list-group list-reset ">
-    <button (click)="reload(tag)" class="list-group-item list-group-item-action" *ngFor="let tag of tags">
-      {{ tag | titlecase }}
-    </button>
+
+
+      <!-- <button (click)="reload(tag)" class="list-group-item list-group-item-action" *ngFor="let tag of tags">
+        {{ tag | titlecase }}
+      </button> -->
+
+      <div (click)="reload(tag)"  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-2" *ngFor="let tag of tags">
+        <span>{{ tag | titlecase }}</span>
+        <button (click)="remove(tag)" class="btn btn-danger">X</button>
+      </div>
 
   </div>
 </div>

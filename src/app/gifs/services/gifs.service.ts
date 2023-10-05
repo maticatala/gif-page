@@ -36,11 +36,7 @@ export class GifsService {
   }
 
   private organizeHistory( tag: string ): void {
-    tag = tag.toLowerCase();
-
-    if ( this._tagsHistory.includes( tag ) ) {
-      this._tagsHistory = this._tagsHistory.filter( (oldTag ) => oldTag !== tag );
-    }
+    this.removeTag(tag)
 
     this._tagsHistory.unshift( tag );
     this._tagsHistory = this._tagsHistory.splice(0, 10);
@@ -63,6 +59,30 @@ export class GifsService {
 
         this.gifList = resp.data;
 
+      });
+  }
+
+  removeTag(tag: string) {
+    tag = tag.toLowerCase();
+
+    if ( this._tagsHistory.includes( tag ) ) {
+      this._tagsHistory = this._tagsHistory.filter( (oldTag ) => oldTag !== tag );
+    }
+
+    if (this._tagsHistory.length === 0) this.gifList = [];
+
+    this.saveLocalStorage();
+  }
+
+  infinite(tag: string):void {
+    const params = new HttpParams()
+      .set( 'api_key', this.apiKey )
+      .set( 'limit', '10' )
+      .set( 'q', tag );
+
+    this.http.get<SearchResponse>( `${ this.serviceUrl }/search`, { params } )
+      .subscribe ( resp => {
+        this.gifList.concat(resp.data);
       });
   }
 }

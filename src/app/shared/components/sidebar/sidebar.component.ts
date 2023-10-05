@@ -18,4 +18,9 @@ export class SidebarComponent {
     this.gifsService.addTag(tag);
   }
 
+  remove(tag: string): void {
+    debugger;
+    this.gifsService.removeTag(tag);
+  }
+
 }
