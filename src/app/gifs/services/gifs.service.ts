@@ -11,35 +11,53 @@ export class GifsService {
   private apiKey: string = 'LDX5qwxCJ3faybVEgUFsR9kF7bfl8n6s';
   private serviceUrl: string = 'https://api.giphy.com/v1/gifs';
 
-  constructor( private http: HttpClient) { }
-
-  get tagsHistory(): string[] {
-    return [...this._tagsHistory];
+  constructor(private http: HttpClient) {
+    this.loadLocalStorage();
   }
 
-  private organizeHistory(tag: string): void {
+  //GETTERS
+
+  get tagsHistory(): string[] {
+    return [ ...this._tagsHistory ];
+  }
+
+  //METHODS
+
+  private saveLocalStorage(): void {
+    localStorage.setItem("history", JSON.stringify(this.tagsHistory))
+  }
+
+  private loadLocalStorage(): void {
+    if (!localStorage.getItem('history')) return
+
+    this._tagsHistory = JSON.parse(localStorage.getItem('history')!);
+
+    this.addTag(this._tagsHistory[0]);
+  }
+
+  private organizeHistory( tag: string ): void {
     tag = tag.toLowerCase();
 
-    if (this._tagsHistory.includes(tag)) {
-      // this._tagsHistory.splice(this.tagsHistory.indexOf(tag), 1);
-      this._tagsHistory = this._tagsHistory.filter( (oldTag) => oldTag !== tag );
+    if ( this._tagsHistory.includes( tag ) ) {
+      this._tagsHistory = this._tagsHistory.filter( (oldTag ) => oldTag !== tag );
     }
 
-    this._tagsHistory.unshift(tag);
+    this._tagsHistory.unshift( tag );
     this._tagsHistory = this._tagsHistory.splice(0, 10);
+    this.saveLocalStorage();
   }
 
   addTag( tag: string ):void {
-    if (!tag) return;
+    if ( !tag ) return;
 
-    this.organizeHistory(tag);
+    this.organizeHistory( tag );
 
     const params = new HttpParams()
-      .set('api_key', this.apiKey)
-      .set('limit', '10')
-      .set('q', tag);
+      .set( 'api_key', this.apiKey )
+      .set( 'limit', '10' )
+      .set( 'q', tag );
 
-    this.http.get<SearchResponse>(`${this.serviceUrl}/search`, { params })
+    this.http.get<SearchResponse>( `${ this.serviceUrl }/search`, { params } )
       .subscribe ( resp => {
 
         this.gifList = resp.data;
